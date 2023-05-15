@@ -1,5 +1,7 @@
 package com.authentication.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,6 +12,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Configuration
 @EnableWebSecurity
@@ -24,6 +30,21 @@ public class DefaultSecurityFilterChainConfig {
 		http
 			.csrf()
 			.disable()
+			.cors()
+			.configurationSource(new CorsConfigurationSource() {
+				
+				@Override
+				public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
+					CorsConfiguration config = new CorsConfiguration();
+					config.setAllowedOrigins(List.of("*"));
+					config.setAllowedMethods(List.of("*"));
+					config.setAllowCredentials(true);
+					config.setAllowedHeaders(List.of("Authorization"));
+					config.setMaxAge(3600L);
+					return config;
+				}
+			})
+			.and()
 			.authorizeHttpRequests()
 			.requestMatchers("/api/v1/auth/**")
 			.permitAll()
